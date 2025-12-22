@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Midnight Grill PH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-title">Midnight Grill PH <span class="sparkle">🔥</span></div>
+        <div class="brand-sub">Dark, bold, and cooked to perfection.</div>
+      </div>
+
+      <nav class="nav">
+        <a href="#order">Order</a>
+        <a href="#menu">Menu</a>
+        <a href="#footer">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO / BANNER -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner">
+      <div class="hero-left">
+        <h1 class="hero-title">MIDNIGHT GRILL PH</h1>
+        <p class="hero-tag">
+          Rice Meals • Pasta • Burgers • Sides • Drinks
+        </p>
+
+        <div class="hero-badges">
+          <span class="pill">🔥 Best Sellers</span>
+          <span class="pill">🕘 Late-night cravings</span>
+          <span class="pill">🚚 Delivery-ready</span>
+        </div>
+
+        <a class="cta" href="#menu">Browse Menu</a>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-grid">
+          <div class="hero-card">
+            <img src="https://i.pinimg.com/1200x/85/cf/96/85cf962958f31b9fb023933352f9f86e.jpg" alt="Grilled chicken bowl">
+            <div class="hero-card-label">Grilled Chicken Bowl</div>
+          </div>
+          <div class="hero-card">
+            <img src="https://i.pinimg.com/1200x/c6/3b/66/c63b6642e17c6febb23f74a5106dd4b6.jpg" alt="Carbonara">
+            <div class="hero-card-label">Creamy Carbonara</div>
+          </div>
+          <div class="hero-card">
+            <img src="https://i.pinimg.com/736x/2d/c8/b5/2dc8b56f3c06f6201cc118d95cce56cd.jpg" alt="Burger fries">
+            <div class="hero-card-label">Burger + Fries</div>
+          </div>
+          <div class="hero-card">
+            <img src="https://i.pinimg.com/736x/b8/e4/b2/b8e4b236b8913c5539203f1c19b10b69.jpg" alt="Iced lemon tea">
+            <div class="hero-card-label">Iced Lemon Tea</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE -->
+  <main class="page" id="order">
+    <!-- ORDER DETAILS ON TOP -->
+    <section class="order-card">
+      <div class="order-head">
+        <h2>🧾 Order Details</h2>
+        <div class="order-total">Total: ₱<span id="total">0</span></div>
+      </div>
+
+      <div class="order-body">
+        <div class="order-left">
+          <div class="order-list" id="items">
+            <div class="empty" id="emptyMsg">No items yet. Add meals from the menu 🍔</div>
+          </div>
+        </div>
+
+        <!-- FORM: Formspree (REAL RECEIVING) -->
+        <form class="order-form" id="orderForm"
+              action="https://formspree.io/f/xzdpabqj"
+              method="POST">
+
+          <label>
+            Full Name
+            <input id="fullName" name="fullName" type="text" placeholder="e.g., Andrea Garcia" required>
+          </label>
+
+          <label>
+            Address
+            <input id="address" name="address" type="text" placeholder="Complete delivery address" required>
+          </label>
+
+          <label>
+            Contact Number
+            <input id="contact" name="contact" type="tel" placeholder="09xxxxxxxxx" required>
+          </label>
+
+          <label>
+            Payment Method
+            <select id="payment" name="payment" required>
+              <option value="Cash on Delivery">Cash on Delivery</option>
+              <option value="GCash">GCash</option>
+            </select>
+          </label>
+
+          <div class="gcash-box" id="gcashBox" hidden>
+            <div class="gcash-title">GCash Number:</div>
+            <div class="gcash-num">09929440921</div>
+          </div>
+
+          <!-- Hidden fields for Formspree -->
+          <input type="hidden" id="orderSummaryField" name="orderSummary">
+          <input type="hidden" id="orderTotalField" name="orderTotal">
+          <input type="hidden" name="_subject" value="Midnight Grill PH Order">
+          <input type="hidden" name="receiverEmail" value="dreamedia.enterprise@gmail.com">
+
+          <button class="confirm" type="submit">Confirm Order</button>
+
+          <div class="success" id="successBox" hidden>✅ Order sent! Thank you 🔥</div>
+          <div class="error" id="errorBox" hidden>❌ Something went wrong. Try again.</div>
+
+          <p class="note">
+            Orders go to <b>dreamedia.enterprise@gmail.com</b><br/>
+            Contact: <b>09929440921</b>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- MENU -->
+    <section class="menu" id="menu">
+      <div class="menu-top">
+        <h2 class="menu-title">🍽️ Menu</h2>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-tab="best">Best Sellers</button>
+          <button class="tab" data-tab="rice">Rice Meals</button>
+          <button class="tab" data-tab="pasta">Pasta</button>
+          <button class="tab" data-tab="burgers">Burgers</button>
+          <button class="tab" data-tab="sides">Sides</button>
+          <button class="tab" data-tab="drinks">Drinks</button>
+        </div>
+      </div>
+
+      <div class="grid" id="menuGrid"></div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">Midnight Grill PH 🔥</div>
+      <div class="footer-line">Contact: 09929440921</div>
+      <div class="footer-line">Email: dreamedia.enterprise@gmail.com</div>
+      <div class="footer-mini">Live ordering website • GitHub Pages ready</div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
