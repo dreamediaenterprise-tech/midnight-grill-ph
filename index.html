@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Midnight Grill PH</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Midnight Grill PH — Dark, bold, and cooked to perfection. Order now." />
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -18,24 +19,30 @@
         <div class="brand-sub">Dark, bold, and cooked to perfection.</div>
       </div>
 
-      <nav class="nav">
+      <nav class="nav" aria-label="Primary">
         <a href="#order">Order</a>
         <a href="#menu">Menu</a>
         <a href="#footer">Contact</a>
       </nav>
+
+      <button class="top-total" id="topTotalBtn" type="button" aria-label="View order total">
+        <span class="tt-label">Total</span>
+        <span class="tt-val">₱<span id="topTotal">0</span></span>
+        <span class="tt-chip" id="topCount">0</span>
+      </button>
     </div>
   </header>
 
-  <!-- HERO / BANNER -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-overlay"></div>
+    <div class="hero-grain"></div>
 
     <div class="hero-inner">
       <div class="hero-left">
+        <div class="hero-kicker">PREMIUM LATE-NIGHT ORDERING</div>
         <h1 class="hero-title">MIDNIGHT GRILL PH</h1>
-        <p class="hero-tag">
-          Rice Meals • Pasta • Burgers • Sides • Drinks
-        </p>
+        <p class="hero-tag">Rice Meals • Pasta • Burgers • Sides • Drinks</p>
 
         <div class="hero-badges">
           <span class="pill">🔥 Best Sellers</span>
@@ -43,11 +50,18 @@
           <span class="pill">🚚 Delivery-ready</span>
         </div>
 
-        <a class="cta" href="#menu">Browse Menu</a>
+        <div class="hero-ctas">
+          <a class="cta" href="#menu">Browse Menu</a>
+          <a class="cta ghost" href="#order">Go to Order</a>
+        </div>
+
+        <div class="hero-note">
+          Orders go to <b>dreamedia.enterprise@gmail.com</b> • Contact: <b>09929440921</b>
+        </div>
       </div>
 
       <div class="hero-right">
-        <div class="hero-grid">
+        <div class="hero-grid" aria-label="Featured items">
           <div class="hero-card">
             <img src="https://i.pinimg.com/1200x/85/cf/96/85cf962958f31b9fb023933352f9f86e.jpg" alt="Grilled chicken bowl">
             <div class="hero-card-label">Grilled Chicken Bowl</div>
@@ -71,38 +85,45 @@
 
   <!-- PAGE -->
   <main class="page" id="order">
-    <!-- ORDER DETAILS ON TOP -->
+    <!-- ORDER DETAILS -->
     <section class="order-card">
       <div class="order-head">
         <h2>🧾 Order Details</h2>
-        <div class="order-total">Total: ₱<span id="total">0</span></div>
+        <div class="order-total">Total: <span class="gold">₱<span id="total">0</span></span></div>
       </div>
 
       <div class="order-body">
         <div class="order-left">
-          <div class="order-list" id="items">
+          <div class="order-list" id="items" aria-live="polite">
             <div class="empty" id="emptyMsg">No items yet. Add meals from the menu 🍔</div>
+          </div>
+
+          <div class="order-hint">
+            Tip: Use the <b>+ / −</b> buttons on menu cards or inside your order list.
           </div>
         </div>
 
-        <!-- FORM: Formspree (REAL RECEIVING) -->
+        <!-- FORM (Formspree) -->
         <form class="order-form" id="orderForm"
               action="https://formspree.io/f/xzdpabqj"
               method="POST">
 
+          <div class="form-title">Checkout</div>
+          <div class="form-sub">Complete your details then submit your order.</div>
+
           <label>
             Full Name
-            <input id="fullName" name="fullName" type="text" placeholder="e.g., Andrea Garcia" required>
+            <input id="fullName" name="fullName" type="text" placeholder="e.g., Andrea Garcia" required autocomplete="name">
           </label>
 
           <label>
             Address
-            <input id="address" name="address" type="text" placeholder="Complete delivery address" required>
+            <input id="address" name="address" type="text" placeholder="Complete delivery address" required autocomplete="street-address">
           </label>
 
           <label>
             Contact Number
-            <input id="contact" name="contact" type="tel" placeholder="09xxxxxxxxx" required>
+            <input id="contact" name="contact" type="tel" placeholder="09xxxxxxxxx" required inputmode="numeric">
           </label>
 
           <label>
@@ -116,6 +137,7 @@
           <div class="gcash-box" id="gcashBox" hidden>
             <div class="gcash-title">GCash Number:</div>
             <div class="gcash-num">09929440921</div>
+            <div class="gcash-mini">Send payment only after confirmation.</div>
           </div>
 
           <!-- Hidden fields for Formspree -->
@@ -124,10 +146,13 @@
           <input type="hidden" name="_subject" value="Midnight Grill PH Order">
           <input type="hidden" name="receiverEmail" value="dreamedia.enterprise@gmail.com">
 
-          <button class="confirm" type="submit">Confirm Order</button>
+          <button class="confirm" id="submitBtn" type="submit">
+            <span class="btnText">Confirm Order</span>
+            <span class="btnSpinner" aria-hidden="true"></span>
+          </button>
 
-          <div class="success" id="successBox" hidden>✅ Order sent! Thank you 🔥</div>
-          <div class="error" id="errorBox" hidden>❌ Something went wrong. Try again.</div>
+          <div class="inline-msg success" id="successBox" hidden>✅ Order sent! Thank you 🔥</div>
+          <div class="inline-msg error" id="errorBox" hidden>❌ Something went wrong. Try again.</div>
 
           <p class="note">
             Orders go to <b>dreamedia.enterprise@gmail.com</b><br/>
@@ -140,21 +165,68 @@
     <!-- MENU -->
     <section class="menu" id="menu">
       <div class="menu-top">
-        <h2 class="menu-title">🍽️ Menu</h2>
+        <div>
+          <h2 class="menu-title">🍽️ Menu</h2>
+          <div class="menu-sub">Tap + to add, − to remove. Your total updates instantly.</div>
+        </div>
 
-        <div class="tabs" id="tabs">
-          <button class="tab active" data-tab="best">Best Sellers</button>
-          <button class="tab" data-tab="rice">Rice Meals</button>
-          <button class="tab" data-tab="pasta">Pasta</button>
-          <button class="tab" data-tab="burgers">Burgers</button>
-          <button class="tab" data-tab="sides">Sides</button>
-          <button class="tab" data-tab="drinks">Drinks</button>
+        <div class="tabs" id="tabs" role="tablist" aria-label="Menu categories">
+          <button class="tab active" data-tab="best" role="tab" aria-selected="true">Best Sellers</button>
+          <button class="tab" data-tab="rice" role="tab" aria-selected="false">Rice Meals</button>
+          <button class="tab" data-tab="pasta" role="tab" aria-selected="false">Pasta</button>
+          <button class="tab" data-tab="burgers" role="tab" aria-selected="false">Burgers</button>
+          <button class="tab" data-tab="sides" role="tab" aria-selected="false">Sides</button>
+          <button class="tab" data-tab="drinks" role="tab" aria-selected="false">Drinks</button>
         </div>
       </div>
 
-      <div class="grid" id="menuGrid"></div>
+      <div class="grid" id="menuGrid" aria-live="polite"></div>
     </section>
   </main>
+
+  <!-- MOBILE STICKY BAR -->
+  <div class="mobile-bar" id="mobileBar" aria-label="Order total bar">
+    <div class="mb-left">
+      <div class="mb-label">Total</div>
+      <div class="mb-total">₱<span id="mobileTotal">0</span></div>
+    </div>
+    <button class="mb-btn" id="mobileGoOrder" type="button">
+      View Order <span class="mb-chip" id="mobileCount">0</span>
+    </button>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div class="modal" id="successModal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Order success">
+      <div class="modal-top">
+        <div class="modal-badge">✅ Order Sent</div>
+        <button class="modal-x" type="button" data-close="1" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-title">Thanks for ordering! 🔥</div>
+      <div class="modal-sub">We’ll contact you to confirm your order.</div>
+
+      <div class="modal-box">
+        <div class="modal-row">
+          <span>Order</span>
+          <b id="modalSummary">—</b>
+        </div>
+        <div class="modal-row">
+          <span>Total</span>
+          <b class="gold" id="modalTotal">₱0</b>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn ghost" type="button" id="modalBrowse">Browse Menu</button>
+        <button class="modal-btn" type="button" id="modalClose">Close</button>
+      </div>
+
+      <div class="modal-mini">
+        Contact: <b>09929440921</b> • Email: <b>dreamedia.enterprise@gmail.com</b>
+      </div>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <footer class="footer" id="footer">
@@ -162,7 +234,7 @@
       <div class="footer-brand">Midnight Grill PH 🔥</div>
       <div class="footer-line">Contact: 09929440921</div>
       <div class="footer-line">Email: dreamedia.enterprise@gmail.com</div>
-      <div class="footer-mini">Live ordering website • GitHub Pages ready</div>
+      <div class="footer-mini">Live ordering website • Client-ready demo</div>
     </div>
   </footer>
 
