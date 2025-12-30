@@ -1,5 +1,7 @@
-// Midnight Grill PH - MENU DATA (using your image links)
-// Note: prices are realistic PH restaurant pricing.
+// Midnight Grill PH — Premium Upgrade (Frontend + Formspree only)
+// - Better UX: sticky mobile total bar, top total pill, success modal
+// - Safer submit: loading state + prevent empty cart submit
+// - Same menu logic + real-time total updates
 
 const menuData = {
   best: [
@@ -50,6 +52,10 @@ const itemsEl = document.getElementById("items");
 const totalEl = document.getElementById("total");
 const emptyMsg = document.getElementById("emptyMsg");
 
+const topTotalBtn = document.getElementById("topTotalBtn");
+const topTotal = document.getElementById("topTotal");
+const topCount = document.getElementById("topCount");
+
 const paymentEl = document.getElementById("payment");
 const gcashBox = document.getElementById("gcashBox");
 
@@ -59,15 +65,36 @@ const orderTotalField = document.getElementById("orderTotalField");
 const successBox = document.getElementById("successBox");
 const errorBox = document.getElementById("errorBox");
 
+const mobileTotal = document.getElementById("mobileTotal");
+const mobileCount = document.getElementById("mobileCount");
+const mobileGoOrder = document.getElementById("mobileGoOrder");
+
+const submitBtn = document.getElementById("submitBtn");
+
+const successModal = document.getElementById("successModal");
+const modalSummary = document.getElementById("modalSummary");
+const modalTotal = document.getElementById("modalTotal");
+const modalBrowse = document.getElementById("modalBrowse");
+const modalClose = document.getElementById("modalClose");
+
 let activeTab = "best";
 
 // ---------- helpers ----------
 function cssSafe(str){ return str.replace(/[^a-z0-9]/gi,'_'); }
 
-function findItemByName(name){
+function peso(n){
+  const num = Number(n) || 0;
+  return num.toLocaleString("en-PH");
+}
+
+function allItemsFlat(){
   const all = [];
   Object.keys(menuData).forEach(k => menuData[k].forEach(x => all.push(x)));
-  return all.find(x => x.name === name);
+  return all;
+}
+
+function findItemByName(name){
+  return allItemsFlat().find(x => x.name === name);
 }
 
 function addItem(item){
@@ -89,6 +116,12 @@ function calcTotal(){
   return total;
 }
 
+function calcCount(){
+  let c = 0;
+  for(const name in cart) c += cart[name].qty;
+  return c;
+}
+
 function buildOrderSummary(){
   const names = Object.keys(cart);
   if(names.length === 0) return "";
@@ -105,11 +138,11 @@ function makeCard(item){
   card.className = "card";
 
   card.innerHTML = `
-    <img src="${item.img}" alt="${item.name}">
+    <img src="${item.img}" alt="${item.name}" loading="lazy">
     <div class="card-body">
       <div class="card-name">${item.name}</div>
       <div class="card-sub">${item.desc || ""}</div>
-      <div class="card-price">₱${item.price}</div>
+      <div class="card-price">₱${peso(item.price)}</div>
 
       ${item.best ? `<div class="badge">⭐ Best Seller</div>` : ``}
 
@@ -141,7 +174,7 @@ function renderMenu(){
       if(action === "minus") removeItem(item);
 
       updateUI();
-      renderMenu(); // rerender to refresh disabled states
+      renderMenu(); // refresh disabled states
     });
   });
 
@@ -175,7 +208,7 @@ function updateOrderPanel(){
       line.innerHTML = `
         <div class="line-left">
           <div class="line-name">${name}</div>
-          <div class="line-sub">₱${price} × ${qty} = <b>₱${subtotal}</b></div>
+          <div class="line-sub">₱${peso(price)} × ${qty} = <b>₱${peso(subtotal)}</b></div>
         </div>
 
         <div class="pill-qty">
@@ -212,14 +245,24 @@ function updateOrderPanel(){
   }
 }
 
-function updateUI(){
+function updateTotalsUI(){
   const total = calcTotal();
-  totalEl.textContent = total;
+  const count = calcCount();
 
-  // hidden fields for Formspree
+  totalEl.textContent = peso(total);
+
+  topTotal.textContent = peso(total);
+  topCount.textContent = String(count);
+
+  mobileTotal.textContent = peso(total);
+  mobileCount.textContent = String(count);
+
   orderSummaryField.value = buildOrderSummary();
-  orderTotalField.value = `₱${total}`;
+  orderTotalField.value = `₱${peso(total)}`;
+}
 
+function updateUI(){
+  updateTotalsUI();
   updateOrderPanel();
 }
 
@@ -228,8 +271,13 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest(".tab");
   if(!btn) return;
 
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.remove("active");
+    t.setAttribute("aria-selected","false");
+  });
+
   btn.classList.add("active");
+  btn.setAttribute("aria-selected","true");
 
   activeTab = btn.dataset.tab;
   renderMenu();
@@ -238,6 +286,41 @@ document.getElementById("tabs").addEventListener("click", (e) => {
 // ---------- Payment ----------
 paymentEl.addEventListener("change", () => {
   gcashBox.hidden = paymentEl.value !== "GCash";
+});
+
+// ---------- Scroll helpers ----------
+function goToOrder(){
+  document.querySelector("#order")?.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+function goToMenu(){
+  document.querySelector("#menu")?.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+topTotalBtn?.addEventListener("click", goToOrder);
+mobileGoOrder?.addEventListener("click", goToOrder);
+
+// ---------- Modal ----------
+function openModal(summary, total){
+  modalSummary.textContent = summary || "—";
+  modalTotal.textContent = `₱${peso(total)}`;
+
+  successModal.hidden = false;
+  successModal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(){
+  successModal.hidden = true;
+  successModal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+successModal?.addEventListener("click", (e) => {
+  const close = e.target?.getAttribute?.("data-close");
+  if(close) closeModal();
+});
+modalClose?.addEventListener("click", closeModal);
+modalBrowse?.addEventListener("click", () => {
+  closeModal();
+  goToMenu();
 });
 
 // ---------- Submit (Formspree AJAX) ----------
@@ -250,11 +333,16 @@ document.getElementById("orderForm").addEventListener("submit", (e) => {
   const names = Object.keys(cart);
   if(names.length === 0){
     alert("Add at least 1 item first 🍽️");
+    goToMenu();
     return;
   }
 
-  // make sure hidden fields are updated
+  // ensure hidden fields updated
   updateUI();
+
+  // loading state
+  submitBtn.disabled = true;
+  submitBtn.classList.add("loading");
 
   const form = e.target;
   const data = new FormData(form);
@@ -268,21 +356,32 @@ document.getElementById("orderForm").addEventListener("submit", (e) => {
     if(res.ok){
       successBox.hidden = false;
 
+      const total = calcTotal();
+      const summary = buildOrderSummary();
+
       // clear cart
       for(const k in cart) delete cart[k];
+
       form.reset();
       gcashBox.hidden = true;
 
       updateUI();
       renderMenu();
 
-      setTimeout(() => { successBox.hidden = true; }, 2500);
+      // modal (premium)
+      openModal(summary, total);
+
+      setTimeout(() => { successBox.hidden = true; }, 2200);
     } else {
       errorBox.hidden = false;
     }
   })
   .catch(() => {
     errorBox.hidden = false;
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("loading");
   });
 });
 
